@@ -3,175 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HMW 創意發想工作站 - 完整存圖版</title>
+    <title>HMW 創意發想工作站 - 發散收斂版</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: '微軟正黑體', sans-serif; margin: 0; padding: 0; background-color: #f4f6f8; display: flex; flex-direction: column; align-items: center; min-height: 100vh; width: 100vw; overflow-x: hidden; }
-        header { width: 100%; background: #2c3e50; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        body {
+            font-family: '微軟正黑體', sans-serif;
+            margin: 0; padding: 0;
+            background-color: #f4f6f8;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; width: 100vw;
+            overflow-x: hidden;
+        }
+
+        /* 頂部導覽列 */
+        header {
+            width: 100%; background: #2c3e50; color: white; padding: 12px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 100;
+        }
         h1 { font-size: 20px; margin: 0; }
-        .nav-btns { display: flex; gap: 10px; }
-        .btn-save { background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        
+        .header-btns { display: flex; gap: 10px; }
+        .btn-print { background: #ffffff; color: #2c3e50; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-print:hover { background: #e0f7fa; }
+        .btn-save { background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-save:hover { background: #2ecc71; }
+
+        /* 主容器 */
         .container { width: 100%; max-width: 1100px; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
-        .section-card { background: #ffffff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        /* 步驟標題列設計 */
         .step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; border-bottom: 2px solid #ecf0f1; padding-bottom: 8px; }
         .step-badge { background: #e74c3c; color: white; padding: 4px 10px; border-radius: 20px; font-size: 14px; font-weight: bold; }
-        .btn-help { background: #f39c12; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 13px; cursor: pointer; margin-left: auto; }
-        .pov-content { font-size: 18px; display: flex; flex-wrap: wrap; gap: 8px; line-height: 1.8; }
-        .pov-content input { border: none; border-bottom: 2px solid #ccc; padding: 4px 8px; font-size: 18px; color: #d32f2f; font-weight: bold; text-align: center; }
+        .step-title { font-size: 18px; font-weight: bold; color: #2c3e50; }
+        .btn-help { background: #f39c12; color: white; border: none; padding: 4px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; margin-left: auto; }
+        .btn-help:hover { background: #d68910; }
+
+        /* 區塊共用樣式 */
+        .section-card { background: #ffffff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        /* 第一步：POV */
+        .pov-content { font-size: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; line-height: 1.8; }
+        .pov-content input { border: none; border-bottom: 2px solid #ccc; padding: 4px 8px; font-size: 18px; color: #d32f2f; font-weight: bold; text-align: center; background: transparent; outline: none; transition: 0.2s; }
+        .pov-content input:focus { border-bottom-color: #e74c3c; }
+
+        /* 第二步：HMW */
         .hmw-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; }
         @media (max-width: 768px) { .hmw-grid { grid-template-columns: 1fr; } }
-        .hint-box { background: #e0f2f1; padding: 15px; border-radius: 8px; border-left: 5px solid #009688; font-size: 14px; }
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .input-row input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #ced4da; }
-        .btn-action { background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .hmw-card { background: #fff9c4; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #fbc02d; font-weight: bold; display: flex; justify-content: space-between; }
-        #canvas { width: 100%; height: 600px; background-color: #e9ecef; background-image: radial-gradient(#adb5bd 1px, transparent 1px); background-size: 20px 20px; border-radius: 8px; position: relative; overflow: hidden; border: 1px solid #dee2e6; }
-        .note { position: absolute; width: 105px; height: 105px; padding: 8px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 15px; border-radius: 4px; box-shadow: 2px 4px 8px rgba(0,0,0,0.2); cursor: grab; background-color: #fff; border: 2px solid #eee; }
-        #color-picker { display: none; position: fixed; z-index: 3000; background: white; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 140px; }
-        .color-opt { padding: 10px; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f0f0f0; }
-        .modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 10px; width: 100%; max-width: 550px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .hint-box { background: #e0f2f1; padding: 15px; border-radius: 8px; border-left: 5px solid #009688; }
+        .hint-box h3 { margin: 0 0 10px 0; font-size: 15px; color: #00796b; }
+        .hint-box ul { padding-left: 20px; margin: 0; font-size: 14px; line-height: 1.6; color: #333;}
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px;}
+        .input-row input { flex: 1; padding: 10px; font-size: 16px; border-radius: 6px; border: 1px solid #ced4da; outline: none; }
+        .btn-action { background: #3498db; color: white; padding: 10px 20px; font-size: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        #hmw-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
+        .hmw-card { background: #fff9c4; padding: 10px 15px; border-radius: 6px; font-size: 15px; font-weight: bold; color: #333; border-left: 4px solid #fbc02d; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .delete-btn { cursor: pointer; color: #999; font-size: 18px; line-height: 1; }
+
+        /* 第三與第四步：發想畫布 */
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px; }
+        .toolbar input { flex: 1; min-width: 200px; padding: 10px; font-size: 15px; border-radius: 6px; border: 1px solid #ced4da; }
+        
+        #canvas {
+            width: 100%; height: 600px; background-color: #e9ecef;
+            background-image: radial-gradient(#adb5bd 1px, transparent 1px);
+            background-size: 20px 20px; border-radius: 8px; position: relative; overflow: hidden; border: 1px solid #dee2e6;
+        }
+
+        /* 預設為乾淨的白色單色便利貼 */
+        .note {
+            position: absolute; width: 105px; height: 105px; padding: 8px; display: flex; align-items: center; justify-content: center;
+            text-align: center; font-weight: bold; font-size: 15px; color: #333; border-radius: 4px; box-shadow: 2px 4px 8px rgba(0,0,0,0.2);
+            cursor: grab; touch-action: none; z-index: 10; word-break: break-all; transition: transform 0.1s, opacity 0.2s, background-color 0.3s;
+            background-color: #ffffff; /* 預設白色 */
+            border: 2px solid #eee;
+        }
+        .note:active { cursor: grabbing; box-shadow: 4px 8px 15px rgba(0,0,0,0.3); z-index: 100; transform: scale(1.05); }
+
+        /* 🎨 點擊上色彈出選單 */
+        #color-picker {
+            display: none; position: fixed; z-index: 3000; background: white; border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid #ddd; overflow: hidden;
+            flex-direction: column; width: 140px;
+        }
+        .color-opt {
+            padding: 10px; font-size: 14px; font-weight: bold; cursor: pointer; user-select: none;
+            display: flex; align-items: center; gap: 8px; transition: 0.2s; border-bottom: 1px solid #f0f0f0;
+        }
+        .color-opt:hover { filter: brightness(0.95); }
+        .color-opt:last-child { border-bottom: none; }
+        .color-dot { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,0.1); }
+
+        /* 彈出視窗 (Modal) */
+        .modal { display: none; position: fixed; z-index: 4000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background-color: #fff; padding: 25px; border-radius: 10px; width: 100%; max-width: 550px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer; }
+        .close-modal:hover { color: #333; }
+        .modal h2 { margin-top: 0; color: #2c3e50; font-size: 20px; border-bottom: 2px solid #f39c12; padding-bottom: 10px; display: inline-block;}
+        .modal p { line-height: 1.6; font-size: 15px; color: #444; margin-bottom: 10px;}
+        .modal ul { line-height: 1.6; padding-left: 20px; font-size: 14.5px; color: #444; margin-top: 5px; }
+        .modal li { margin-bottom: 10px; }
+        .modal-example { background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; border-radius: 4px; font-style: italic; margin-top: 15px; font-size: 14.5px;}
+
+        /* 列印模式 */
+        @media print {
+            header, .btn-help, .hint-box, .input-row, .toolbar, .delete-btn, #color-picker, .header-btns { display: none !important; }
+            body { background: white; }
+            .container { max-width: 100%; padding: 0; }
+            .section-card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; }
+            .pov-content input { border: none; color: black; }
+            .hmw-grid { display: block; }
+            #canvas { border: 1px solid #000; height: 750px; background: white;}
+            .note { box-shadow: 1px 1px 3px rgba(0,0,0,0.3) !important; border: 1px solid #aaa; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>💡 HMW 工作站</h1>
-        <div class="nav-btns">
+        <h1>💡 跨領域設計：HMW 工作站</h1>
+        <div class="header-btns">
             <button class="btn-save" onclick="exportToImage()">💾 儲存成果圖</button>
+            <button class="btn-print" onclick="window.print()">🖨️ 匯出 PDF</button>
         </div>
     </header>
 
     <div class="container" id="main-content">
+        
         <div class="section-card">
             <div class="step-header">
-                <span class="step-badge">第一步</span> <span class="step-title">POV 專案題目</span>
+                <span class="step-badge">第一步</span>
+                <span class="step-title">確立靶心 (POV 專案題目)</span>
                 <button class="btn-help" onclick="openHelp(1)">💡 怎麼寫？</button>
             </div>
             <div class="pov-content">
-                如何協助 <input type="text" value="外國遊客" style="width: 100px;"> 
-                在 <input type="text" value="找不到旅館" style="width: 120px;"> 時，克服 
-                <input type="text" value="語言不通的情況" style="width: 180px;">，可以 
-                <input type="text" value="順利地認路" style="width: 120px;"> ？
+                如何協助 <input type="text" placeholder="目標對象" style="width: 120px;" value="外國遊客"> 
+                在 <input type="text" placeholder="情境" style="width: 140px;" value="找不到旅館"> 時，克服 
+                <input type="text" placeholder="限制與痛點" style="width: 250px;" value="人在國外語言不通的情況">，可以 
+                <input type="text" placeholder="預期目標" style="width: 150px;" value="順利地認路"> ？
             </div>
         </div>
 
         <div class="section-card">
             <div class="step-header">
-                <span class="step-badge">第二步</span> <span class="step-title">轉換視角 (HMW)</span>
+                <span class="step-badge">第二步</span>
+                <span class="step-title">轉換視角 (提出 HMW 問句)</span>
                 <button class="btn-help" onclick="openHelp(2)">💡 怎麼問？</button>
             </div>
             <div class="hmw-grid">
                 <div class="hint-box">
-                    <h3>🔍 思考提示：</h3>
-                    A.有趣化 | B.去障礙 | C.科技感 | D.人際力
+                    <h3>🔍 HMW 思考提示</h3>
+                    <ul>
+                        <li><b>A. 放大目標</b>：如何讓過程變有趣？</li>
+                        <li><b>B. 移除限制</b>：如何消除目前的障礙？</li>
+                        <li><b>C. 科技連結</b>：運用數位/醫工能做什麼？</li>
+                        <li><b>D. 轉移焦點</b>：誰能代替他解決問題？</li>
+                    </ul>
                 </div>
                 <div>
                     <div class="input-row">
                         <input type="text" id="hmw-input" placeholder="我們該如何...">
                         <button class="btn-action" onclick="addHMW()">➕ 新增</button>
                     </div>
-                    <div id="hmw-list"></div>
+                    <div id="hmw-list">
+                        <div class="hmw-card">
+                            <span>✨ 我們該如何讓外國遊客覺得「迷路找旅館」是一場有趣的城市尋寶遊戲？</span>
+                            <span class="delete-btn" onclick="this.parentElement.remove()">×</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="section-card">
-            <div class="step-header">
-                <span class="step-badge">第三/四步</span> <span class="step-title">發散與收斂</span>
-                <button class="btn-help" onclick="openHelp(3)">💡 怎麼操作？</button>
+            <div class="step-header" style="justify-content: flex-start; gap: 10px;">
+                <span class="step-badge">第三步</span><span class="step-title" style="margin-right: 15px;">先發散 (生成點子)</span>
+                <span class="step-badge" style="background:#8e44ad;">第四步</span><span class="step-title">後收斂 (分類上色)</span>
+                <button class="btn-help" onclick="openHelp(3)">💡 怎麼操作？ (含顏色定義)</button>
             </div>
-            <div class="input-row">
-                <input type="text" id="note-input" placeholder="想到什麼解法？快速輸入...">
+            
+            <div class="toolbar">
+                <input type="text" id="note-input" placeholder="想到什麼解法？快速輸入 (如：擴增實境導航)">
                 <button class="btn-action" onclick="addNote()">➕ 生成便利貼</button>
+                <button onclick="clearCanvas()" style="margin-left:auto; background:none; border:1px solid #ccc; padding:8px 12px; cursor:pointer; border-radius:4px;">🗑️ 全清</button>
             </div>
+
             <div id="canvas"></div>
+            <p style="text-align:center; color:#e74c3c; font-size:14px; margin-top:12px; font-weight: bold;">
+                👆 第四步操作：① 把相近的點子拉在一起。 ②「點擊」便利貼為它賦予跨領域顏色。 ③ 拖曳到畫布外可直接刪除。
+            </p>
         </div>
     </div>
 
     <div id="color-picker">
-        <div class="color-opt" style="background:#fff3bf" onclick="setNoteColor('#fff3bf')">🟨 企劃活動</div>
-        <div class="color-opt" style="background:#d3f9d8" onclick="setNoteColor('#d3f9d8')">🟩 科技數位</div>
-        <div class="color-opt" style="background:#e7f5ff" onclick="setNoteColor('#e7f5ff')">🟦 視覺空間</div>
-        <div class="color-opt" style="background:#ffe3e3" onclick="setNoteColor('#ffe3e3')">🟥 痛點救援</div>
+        <div class="color-opt" style="background:#fff3bf" onclick="setNoteColor('#fff3bf', 'none')">
+            <div class="color-dot" style="background:#fff3bf"></div> 企劃活動
+        </div>
+        <div class="color-opt" style="background:#d3f9d8" onclick="setNoteColor('#d3f9d8', 'none')">
+            <div class="color-dot" style="background:#d3f9d8"></div> 科技數位
+        </div>
+        <div class="color-opt" style="background:#e7f5ff" onclick="setNoteColor('#e7f5ff', 'none')">
+            <div class="color-dot" style="background:#e7f5ff"></div> 視覺空間
+        </div>
+        <div class="color-opt" style="background:#ffe3e3" onclick="setNoteColor('#ffe3e3', 'none')">
+            <div class="color-dot" style="background:#ffe3e3"></div> 痛點救援
+        </div>
+        <div class="color-opt" style="background:#ffffff" onclick="setNoteColor('#ffffff', '2px solid #eee')">
+            <div class="color-dot" style="background:#ffffff"></div> 恢復白色
+        </div>
+    </div>
+
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeHelp()">&times;</span>
+            <h2 id="helpTitle">說明標題</h2>
+            <div id="helpDesc">說明內容</div>
+            <div class="modal-example" id="helpExample">
+                範例內容
+            </div>
+        </div>
     </div>
 
     <script>
+        // --- 新增：截圖存檔功能 ---
         function exportToImage() {
             const btn = document.querySelector('.btn-save');
+            const originalText = btn.innerText;
             btn.innerText = "正在產圖...";
             
-            // 使用 html2canvas 抓取整塊 container
-            html2canvas(document.querySelector("#main-content"), {
-                scale: 2, // 提高解析度
+            // 使用 html2canvas 抓取 main-content 區塊
+            html2canvas(document.getElementById("main-content"), {
+                scale: 2, // 提高解析度讓文字更清晰
                 useCORS: true,
                 logging: false,
-                backgroundColor: "#f4f6f8"
+                backgroundColor: "#f4f6f8" // 與背景同色
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `HMW_成果_${new Date().getTime()}.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
-                btn.innerText = "💾 儲存成果圖";
-                alert("成果圖已下載！若手機未自動下載，請長按圖片儲存。");
+                btn.innerText = originalText;
+                
+                // 針對某些不會自動下載的手機瀏覽器給予提示
+                setTimeout(() => {
+                    alert("成果圖已下載！若手機未自動下載，代表瀏覽器阻擋，您也可直接在畫面手動截圖。");
+                }, 500);
+            }).catch(err => {
+                console.error("截圖失敗", err);
+                btn.innerText = originalText;
+                alert("產圖失敗，請檢查網路連線後再試。");
             });
         }
 
-        // --- 以下為原本的 HMW、便利貼、拖曳與 Modal 邏輯 ---
-        function addHMW() {
-            const val = document.getElementById('hmw-input').value;
-            if(!val) return;
-            const card = document.createElement('div');
-            card.className = 'hmw-card';
-            card.innerHTML = `<span>✨ 我們該如何${val.replace('我們該如何','')}</span> <span onclick="this.parentElement.remove()">×</span>`;
-            document.getElementById('hmw-list').appendChild(card);
-            document.getElementById('hmw-input').value = "";
+        // --- 說明範例資料 (更新為先發散後收斂的操作法) ---
+        const helpData = {
+            1: {
+                title: "第一步：確立靶心 (POV)",
+                desc: "<p>請把上一堂課小組討論出的「最終問題」填入空格。這個步驟是為了幫大家畫出靶心，確保接下來的發想不會偏離主題。</p>",
+                example: "🎯 範例：如何協助 [外國遊客] 在 [找不到旅館] 時，克服 [語言不通]，可以 [順利認路]？"
+            },
+            2: {
+                title: "第二步：轉換視角 (HMW)",
+                desc: "<p>不要急著想答案！請看著第一步的靶心，利用左邊的 A、B、C、D 四把鑰匙，把死板的問題轉化為各種充滿想像力的「考題」。</p>",
+                example: "🎯 範例：<br>依照視角A，可以問：「我們該如何讓找路變成有趣的尋寶遊戲？」<br>依照視角C，可以問：「我們該如何利用穿戴裝置來自動導航？」"
+            },
+            3: {
+                title: "第三/四步：先發散，後收斂上色",
+                desc: "<p><b>【第三步：先發散】</b>針對上面的問句，只要有任何點子就立刻打字、按生成。不要管顏色，讓白色的便利貼貼滿畫布就對了！</p>" +
+                      "<p><b>【第四步：收斂上色】</b>把類似的點子拖在一起。分類好後，<b>「單擊」便利貼</b>，就可以幫它賦予跨領域顏色：</p>" +
+                      "<ul>" +
+                      "<li><span style='background:#fff3bf; padding:2px 6px; border-radius:4px;'>🟨 黃色 (企劃活動)</span>：改變軟體或人為規則 (例：集章尋寶APP)</li>" +
+                      "<li><span style='background:#d3f9d8; padding:2px 6px; border-radius:4px;'>🟩 綠色 (科技數位)</span>：運用程式、醫工硬體技術 (例：AR實境箭頭導航)</li>" +
+                      "<li><span style='background:#e7f5ff; padding:2px 6px; border-radius:4px;'>🟦 藍色 (視覺資源)</span>：改變空間動線、視覺符號設計 (例：路口顏色編碼)</li>" +
+                      "<li><span style='background:#ffe3e3; padding:2px 6px; border-radius:4px;'>🟥 紅色 (痛點救援)</span>：社會人際支援、緊急求助 (例：雙語求救燈箱)</li>" +
+                      "</ul>" +
+                      "<p>💡 <b>刪除點子：</b>直接把不要的便利貼拖曳到畫布外放開，就會銷毀囉！</p>",
+                example: "🎯 操作心法：創意發想時不要一心二用。先瘋狂產出白色便利貼，最後再來當評審幫它們上色分類。"
+            }
+        };
+
+        function openHelp(step) {
+            document.getElementById('helpTitle').innerHTML = helpData[step].title;
+            document.getElementById('helpDesc').innerHTML = helpData[step].desc;
+            document.getElementById('helpExample').innerHTML = helpData[step].example;
+            document.getElementById('helpModal').style.display = 'flex';
         }
 
+        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
+
+        // 點擊背景關閉選單或Modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('helpModal');
+            if (event.target == modal) { modal.style.display = "none"; }
+            
+            // 如果點擊的不是便利貼，也不是選單本身，就關閉選單
+            if (!event.target.closest('.note') && !event.target.closest('#color-picker')) {
+                document.getElementById('color-picker').style.display = 'none';
+                activeNote = null;
+            }
+        }
+
+        // --- HMW 新增功能 ---
+        function addHMW() {
+            const input = document.getElementById('hmw-input');
+            const text = input.value.trim();
+            if (!text) return;
+            const prefix = text.startsWith('我們該如何') ? '' : '我們該如何 ';
+            const list = document.getElementById('hmw-list');
+            const card = document.createElement('div');
+            card.className = 'hmw-card';
+            card.innerHTML = `<span>✨ ${prefix}${text}</span> <span class="delete-btn" onclick="this.parentElement.remove()">×</span>`;
+            list.insertBefore(card, list.firstChild);
+            input.value = "";
+        }
+
+        // --- 便利貼邏輯 (拖曳、點擊上色、拖出銷毀) ---
+        const canvas = document.getElementById('canvas');
+        const colorPicker = document.getElementById('color-picker');
+        let activeNote = null; // 紀錄目前被點擊準備上色的便利貼
+
         function addNote() {
-            const val = document.getElementById('note-input').value || "新點子";
+            const input = document.getElementById('note-input');
+            const text = input.value.trim() || "新點子";
+
             const note = document.createElement('div');
             note.className = 'note';
-            note.innerText = val;
-            note.style.left = '50px'; note.style.top = '50px';
+            note.innerText = text;
+            
+            const startX = (canvas.clientWidth / 2) - 50 + (Math.random() * 40 - 20);
+            const startY = 100 + (Math.random() * 40 - 20);
+            note.style.left = startX + 'px';
+            note.style.top = startY + 'px';
+
             bindInteractions(note);
-            document.getElementById('canvas').appendChild(note);
-            document.getElementById('note-input').value = "";
+            canvas.appendChild(note);
+            input.value = "";
+        }
+
+        function clearCanvas() {
+            if(confirm("確定要清空畫布嗎？")) canvas.innerHTML = '';
         }
 
         function bindInteractions(el) {
-            let isDragging = false, startX, startY, initL, initT;
-            el.addEventListener('pointerdown', e => {
-                isDragging = false; el.setPointerCapture(e.pointerId);
-                startX = e.clientX; startY = e.clientY; initL = el.offsetLeft; initT = el.offsetTop;
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            el.addEventListener('pointerdown', (e) => {
+                isDragging = false; // 重置拖曳狀態
+                el.setPointerCapture(e.pointerId);
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = el.offsetLeft;
+                initialTop = el.offsetTop;
             });
-            el.addEventListener('pointermove', e => {
+
+            el.addEventListener('pointermove', (e) => {
                 if (!el.hasPointerCapture(e.pointerId)) return;
-                if (Math.abs(e.clientX - startX) > 5) isDragging = true;
+                
+                // 如果移動超過 5px，才判定為拖曳，而不是點擊
+                if (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5) {
+                    isDragging = true;
+                }
+
                 if (isDragging) {
-                    el.style.left = (e.clientX - startX + initL) + 'px';
-                    el.style.top = (e.clientY - startY + initT) + 'px';
+                    e.preventDefault();
+                    let currentX = e.clientX - startX + initialLeft;
+                    let currentY = e.clientY - startY + initialTop;
+                    
+                    el.style.left = currentX + 'px';
+                    el.style.top = currentY + 'px';
+
+                    // 判斷是否拖出畫布外 (給予即將銷毀的視覺暗示)
+                    const isOutOfBounds = currentX < -30 || currentY < -30 || currentX > canvas.clientWidth - 70 || currentY > canvas.clientHeight - 70;
+                    if (isOutOfBounds) {
+                        el.style.opacity = '0.4'; el.style.transform = 'scale(0.8)';
+                    } else {
+                        el.style.opacity = '1'; el.style.transform = 'scale(1.05)';
+                    }
                 }
             });
-            el.addEventListener('pointerup', e => {
+
+            el.addEventListener('pointerup', (e) => {
                 el.releasePointerCapture(e.pointerId);
-                if (!isDragging) {
-                    activeNote = el;
-                    const picker = document.getElementById('color-picker');
-                    picker.style.display = 'block';
-                    picker.style.left = e.clientX + 'px'; picker.style.top = e.clientY + 'px';
+                el.style.transform = 'scale(1)';
+
+                if (isDragging) {
+                    // 若是拖曳結束，檢查是否在畫布外，是的話就刪除
+                    const currentX = el.offsetLeft;
+                    const currentY = el.offsetTop;
+                    const isOutOfBounds = currentX < -30 || currentY < -30 || currentX > canvas.clientWidth - 70 || currentY > canvas.clientHeight - 70;
+                    if (isOutOfBounds) el.remove();
                 } else {
-                    // 拖出銷毀邏輯
-                    if(el.offsetLeft < -20 || el.offsetTop < -20) el.remove();
+                    // 若不是拖曳 (距離小於 5px)，就是「點擊」，開啟調色盤
+                    openColorPicker(el, e.clientX, e.clientY);
                 }
             });
         }
 
-        let activeNote = null;
-        function setNoteColor(col) {
-            if(activeNote) activeNote.style.backgroundColor = col;
-            document.getElementById('color-picker').style.display = 'none';
+        // --- 調色盤邏輯 ---
+        function openColorPicker(note, mouseX, mouseY) {
+            activeNote = note;
+            colorPicker.style.display = 'flex';
+            
+            // 讓調色盤出現在滑鼠點擊的位置旁邊
+            let leftPos = mouseX + 15;
+            let topPos = mouseY;
+            
+            // 防止調色盤超出螢幕右下角
+            if (leftPos + 140 > window.innerWidth) leftPos = mouseX - 150;
+            if (topPos + 200 > window.innerHeight) topPos = window.innerHeight - 200;
+
+            colorPicker.style.left = leftPos + 'px';
+            colorPicker.style.top = topPos + 'px';
+        }
+
+        function setNoteColor(color, borderStyle) {
+            if (activeNote) {
+                activeNote.style.backgroundColor = color;
+                activeNote.style.border = borderStyle;
+            }
+            colorPicker.style.display = 'none';
+            activeNote = null;
         }
     </script>
 </body>
